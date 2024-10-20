@@ -92,7 +92,11 @@ export const getAllPostCount = async () => (await getPostList()).length;
 
 export const getCategoryList = () => {
   const cgPaths: string[] = sync(`${POSTS_PATH}/*`);
-  const cgList = cgPaths.map((path) => path.split('/').slice(-1)?.[0]);
+  // const cgList = cgPaths.map((path) => path.split('/').slice(-1)?.[0]);
+  const cgList = cgPaths.map((p) => {
+    const normalizedPath = p.split(path.sep); // 운영체제에 맞는 구분자로 분리
+    return normalizedPath[normalizedPath.length - 1]; // 마지막 요소 반환
+  });
   return cgList;
 };
 
