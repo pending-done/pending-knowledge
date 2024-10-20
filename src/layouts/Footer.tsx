@@ -23,7 +23,7 @@ export const Footer = () => {
         </Link>
       </div>
       <div>
-        © 2024. <span className='font-semibold'>이준열</span> all rights reserved.
+        © 2024. <span className='font-semibold'>LeeJY</span> all rights reserved.
       </div>
     </footer>
   );
