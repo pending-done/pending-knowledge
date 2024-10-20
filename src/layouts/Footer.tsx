@@ -14,7 +14,7 @@ export const Footer = () => {
             width={30}
           />
         </Link>
-        <Link href='https://www.linkedin.com/in/dohkim777' target='_blank'>
+        <Link href='' target='_blank'>
           <IconLinkedin
             className='fill-foreground transition hover:fill-pink-600'
             height={30}

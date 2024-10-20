@@ -1,6 +1,4 @@
 // import { RESUME_DATA_EN } from '@/data/resume-data-en';
-import { RESUME_DATA_KO } from '@/data/resume-data-ko';
-
 export interface PostMatter {
   title: string;
   date: Date;
@@ -29,29 +27,3 @@ export interface HeadingItem {
   link: string;
   indent: number;
 }
-
-export interface ProjectMatter {
-  title: string;
-  desc: string;
-  startMonth: string;
-  endMonth: string;
-  tags: string;
-  gitRepoUrl?: string;
-  link?: string;
-}
-
-export interface Project extends ProjectMatter {
-  slug: string;
-  startMonthString: string;
-  endMonthString?: string;
-  content: string;
-}
-
-export const DATAS = {
-  ko: {
-    data: RESUME_DATA_KO,
-    aboutClassName: 'sm:whitespace-pre-wrap whitespace-normal',
-  },
-};
-
-export type Locale = keyof typeof DATAS;
