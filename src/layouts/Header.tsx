@@ -11,8 +11,8 @@ import { cn } from '@/lib/utils';
 import { Github } from 'lucide-react';
 
 const navList = [
-  { name: '포스팅', href: '/blog' },
-  { name: 'About', href: '/about' },
+  { name: '전체 포스팅', href: '/blog' },
+  { name: 'Frontend', href: '/blog/Frontend' },
 ];
 
 export const Header = () => {
@@ -46,7 +46,7 @@ export const Header = () => {
         <div className='flex gap-3'>
           <ThemeSwitch />
           <Button asChild variant='ghost' size='icon'>
-            <Link href='https://github.com/LeeJY97' target='_blank'>
+            <Link href='https://github.com/pending-done' target='_blank'>
               <Github className='size-[1.2rem]' />
             </Link>
           </Button>

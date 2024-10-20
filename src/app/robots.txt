@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 // TODO 주소
-Sitemap: https://www.d5br5.dev/sitemap.xml
+Sitemap: https://www.pending-done.dev/sitemap.xml

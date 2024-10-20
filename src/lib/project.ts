@@ -61,29 +61,29 @@ const getProjectInfoFromPath = (postPath: string) => {
 };
 
 // 모든 프로젝트 목록 조회. 이력서 하단에서 사용
-const getProjectList = async (locale: Locale): Promise<Project[]> => {
-  const projectPaths = getProjectSectionPaths(locale);
-  const projectList = await Promise.all(
-    projectPaths.map((postPath) => parseProject(postPath, locale))
-  );
-  return projectList;
-};
+// const getProjectList = async (locale: Locale): Promise<Project[]> => {
+//   const projectPaths = getProjectSectionPaths(locale);
+//   const projectList = await Promise.all(
+//     projectPaths.map((postPath) => parseProject(postPath, locale))
+//   );
+//   return projectList;
+// };
 
-export const getSortedProjectList = async (locale: Locale) => {
-  const projectList = await getProjectList(locale);
-  return sortProjectList(projectList);
-};
+// export const getSortedProjectList = async (locale: Locale) => {
+//   const projectList = await getProjectList(locale);
+//   return sortProjectList(projectList);
+// };
 
-const getProjectCareerPaths = (locale: Locale) => {
-  const filename = locale || '*';
-  const projectPaths: string[] = sync(`${PROJECT_CAREER_PATH}/**/${filename}.mdx`);
-  return projectPaths;
-};
+// const getProjectCareerPaths = (locale: Locale) => {
+//   const filename = locale || '*';
+//   const projectPaths: string[] = sync(`${PROJECT_CAREER_PATH}/**/${filename}.mdx`);
+//   return projectPaths;
+// };
 
-export const getCareerProjectList = async (locale: Locale) => {
-  const projectPaths = getProjectCareerPaths(locale);
-  const projectList = await Promise.all(
-    projectPaths.map((postPath) => parseProject(postPath, locale))
-  );
-  return projectList;
-};
+// export const getCareerProjectList = async (locale: Locale) => {
+//   const projectPaths = getProjectCareerPaths(locale);
+//   const projectList = await Promise.all(
+//     projectPaths.map((postPath) => parseProject(postPath, locale))
+//   );
+//   return projectList;
+// };
