@@ -2,11 +2,11 @@
 title: "라이브러리 없이 캘린더 구현하기 - 기본 UI 구현 #1"
 date: 2024-10-28
 desc: Next+TS 환경에서 캘린더 구현하기. 첫 번째
-thumbnail: /zero_library/calendar/calendar_1.png
+thumbnail: /zero_library/calendar/calendar_2.png
 ---
 
 
-![](/zero_library/calendar/calendar_1.png)
+![](/zero_library/calendar/calendar_2.png)
 
 
 ## 캘린더
@@ -14,8 +14,9 @@ thumbnail: /zero_library/calendar/calendar_1.png
 일반적으로 캘린더를 사용하는 이유는 여러가지가 있겠지만 대부분 다음 기능을 필요로 할 것이다.
 1. 날짜를 확인하기 위함(완전 기본)
 2. 일정을 확인하기 위함
+3. 기타 등등
 
-이번에 구현하려고 하는 기능은 날짜 확인은 기본이고, 일정까지 확인할 수 있도록 구현할 예정이다.
+이번에 구현하려고 하는 기능은 캘린더의 근간이 되는 날짜 확인 기능을 구현할 예정이다. 캘린더는 굉장히 다양한 프로그램에 들어간다. 따라서 관련 라이브러리도 다양한데, 라이브러리를 사용하면 당장에는 편할 수 있지만 추가적인 기능을 넣기에는 처음부터 직접 구현하는게 편할거라 판단되어 기본 기능부터 내가 필요한 기능까지 구현할 예정이다. 우선 추가적인 기능은 이후에 포스팅 할 예정이며 일정을 확인할 수 있는 기능을 구현할 예정이다.
 
 ## 목표
 
@@ -238,3 +239,7 @@ for (let i = dayStart; i <= dayEnd; i = addDays(i, 1)) {
 ## Reference
 
 - [date-fns 공식문서](https://date-fns.org/docs/Getting-Started)
+
+## 라이브러리 없이 캘린더 구현하기
+[#1 현재 글 - 기본 UI 구현 ](#)
+[#2 일정 표시 구현](./calendar-2/)

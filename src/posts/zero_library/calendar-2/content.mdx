@@ -1,0 +1,240 @@
+---
+title: "라이브러리 없이 캘린더 구현하기 - 일정 표시 구현 #2"
+date: 2024-10-29
+desc: Next+TS 환경에서 캘린더 구현하기. 두 번째 일정 표시 기능 구현
+thumbnail: /zero_library/calendar/calendar_1.png
+---
+
+아래 와이어프레임처럼 만드는게 최종 목표이다..
+
+![](/zero_library/calendar/calendar_1.png)
+
+
+
+## 캘린더
+
+일반적으로 웹에서 캘린더를 사용하는 이유는 여러가지가 있겠지만 대부분 날짜를 확인하는 용도로만 사용하지는 않을 것이다. 나의 경우 일정을 확인하기 위한 용도로 만드는게 최종 목표이다.
+
+하지만 추가적인 기능을 만드려면 우선 [기본적인 캘린더 기능](./calendar/)부터 만들 줄 알아야 한다고 생각한다. 궁금한 분들은 한 번 보고 오셔요.
+
+## 목표
+
+<Callout type="normal">
+현재 진행중인 팀 프로젝트(캠핑 정보 관련)에서 사용 될 일정 확인 캘린더. 모임(meet) 일정과, 내가 후기(stamp)를 남긴 발자취를 확인 할 수 있다.
+</Callout>
+
+
+## 데이터 구조 정의
+
+<Callout type="normal">
+`TypeScript`, `Calendar` 둘 다 미숙하기 때문에 잘못된 점이 있다면 **언제나 훈수 부탁**드립니다.
+</Callout>
+
+우선 데이터의 구조부터 정의해야 할 것 같다. 모임`(meet)` 데이터와 후기`(stamp)` 데이터를 가져온 뒤 어떤식으로 가공해야 캘린더에서 사용이 가능 할 지 생각해보았다. 데이터를 정의하는데 어려웠던 점은 모임과 후기 기능이 아직 완성되기 전이라 대강 예측하고 진행해야하는 부분이 어려웠다. 
+
+### 1. Schedule 타입
+
+우선 `meet`, `stamp` 모두 DB에서 받아 올 데이터이다. 다른 테이블에서 가져온 데이터를 우선 하나의 배열`[]`로 합치는 과정이 필요하다고 생각했다. 따라서 `Schedule` 타입을 정의했으며 하나의 배열로 합쳐졌을 때 다음과 같은 데이터가 필요하다고 생각하고 만들었다.
+
+```ts
+export type Schedule = {
+  type: ScheduleType; // "meet" | "stamp"
+  typeId: number;     // 각 데이터의 고유 ID (Database PK)
+  content: string;    // 달력에 표시될 데이터 (모임이라면 모임 글의 제목)
+  startDate: Date;    // 시작일
+  endDate: Date;      // 종료일(stamp 같은 경우 startDate와 동일함)
+};
+```
+
+<Callout type="info">
+각 `key`, `value`는 추후에 약간의 수정이 있을 수 있지만, 전체적인 틀은 비슷할 것이라고 생각하고 작업을 진행했다.
+</Callout>
+
+
+### 2. CellCardTable 타입
+
+`meet`와 `stamp`를 하나로 합친 이후에도 한 번 더 데이터 가공을 해야한다. `schedule[]` 로만 사용하면 성능적인 부분에서 좋지 않을거라 생각해서 `해시테이블` 구조로 한 번 더 가공했다.
+
+```ts {2,6,7,11,12,13}
+export type CellCardTable = {
+  [key: string]: CellCard[]; // [yyyy-MM-dd]
+};
+
+export type CellCard = {
+  id: string; // key를 위한 id (type-typeId-sequence)
+  range: number; // 당일이 아닌 경우 몇 칸만큼 표시할 지
+  typeId: number; 
+  type: ScheduleType;
+  content: string;
+  isExistPrev: boolean; // 주가 변경되었지만 일정은 끝나지 않은 경우 (true | false)
+  isExistNext: boolean; // 이전 일정이 없는 경우 (true | false)
+  date: Date; // 달력에 표시될 date 
+};
+
+```
+
+- **CellCardTable**
+  - 일자(yyyy-MM-dd)가 `key`가 되고, 각 일자 하위에 일정이 배열로 존재한다. 
+- **id**
+  - 같은 일정이지만 **캘린더상 다른 줄**에서 표시되는 경우, 구분하기 위한 값이다. 그럴 경우 `type-typeId` 까지는 같은 값이지만 `sequence`가 다르다.
+- **range**
+  - 당일이 아닌, 기간으로 표시해주어야 하는 경우 캘린더에 몇 칸을 표시할지에 대한 값이다.
+- **isExistPrev**
+  - **이전 일정이 존재하는지** 확인하는 값이다. 예를 들어 줄바꿈이 되는 경우 이전 줄에 같은 일정이 있는지 판별하는 변수(`padding` 등을 다르게 주기 위함)
+- **isExistNext**
+  - **다음 일정이 존재하는지** 확인하는 값이다. 예를 들어 줄바꿈이 되는 경우 다음 줄에 같은 일정이 있는지 판별하는 변수(`padding` 등을 다르게 주기 위함)
+- **date**
+  - 실제 `meet`의 데이터가 아닌 **캘린더에 표시될 일자**이다. 예를 들어 줄바꿈이 되는 경우 다음 줄의 첫 일자를 값으로 갖는다. 그리고 해당 일자 기준 `range`만큼 달력에 표시된다.
+
+
+### 3. cellCardTable 예시 데이터
+일자별로 `CellCard`의 배열을 갖는다. 다음 예시는 **같은 일정이지만 다른 줄에서 표시**되기 위해 가공된 데이터의 예시이다. `id`값을 보면 `type`과 `typeId`는 같지만 `sequence`는 다른 값인 것을 확인할 수 있다. 그리고 `range`만큼 칸을 차지한다.
+
+```ts {4-7, 17-20, 29-32}
+cellCardTable = {
+  2024-11-01: [
+    {
+      id:"meet-1-1",
+      range:2,
+      typeId:1,
+      type:"meet",
+      content:"가평 어디 캠핑 좋던데 같이 가요~",
+      isExistPrev:false,
+      isExistNext:true,
+      date:2024-11-01
+    },
+    /** . . 생략 */
+  ]
+  2024-11-03:[
+    {
+      id:"meet-1-2",
+      range:7,
+      typeId:1,
+      type:"meet",
+      content:"가평 어디 캠핑 좋던데 같이 가요~",
+      isExistPrev:true,
+      isExistNext:true,
+      date:2024-11-03
+    },
+  ],
+  2024-11-10:[
+    {
+      id:"meet-1-3",
+      range:1,
+      typeId:1,
+      type:"meet",
+      content:"가평 어디 캠핑 좋던데 같이 가요~",
+      isExistPrev:true,
+      isExistNext:false,
+      date:2024-11-10
+    },
+  ]
+}
+```
+
+
+## 결과 테스트
+
+### 1. 스케줄 데이터 가공
+
+위에서 설명한대로 Calendar 컴포넌트에서 `schedule[]` 데이터를 `cellCardTable`로 가공한다. 로직은 함수에 따로 분리했다. 그리고 CalendarTable 컴포넌트에 Props로 전달한다.
+
+```tsx
+const cellCardTable = convertScheduleDataToCellCardTable(scheduleList);
+/** ... 생략 */
+<CalendarTable
+  currentMonth={currentMonth}
+  cellCardTable={cellCardTable}
+/>
+```
+
+### 2. 데이터 전달
+
+CalendarTable 컴포넌트에서 반복하며 CalendarCell 컴포넌트를 호출한다. 이 때 해당하는 일자에 해당하는 `cellCard` 데이터를 전달한다.
+
+```tsx {5}
+{days.map((day) => (
+  <CalendarCell
+    key={day.toISOString()}
+    day={day}
+    cellCardList={cellCardTable[format(day, "yyyy-MM-dd")]}
+  />
+))}
+</ul>
+```
+
+
+### 3. 렌더링
+
+이제 렌더링만 잘 되면 끝인데 그 전에 우선 `stamp`데이터와 `meet` 데이터를 분리한다. (표시되는 스타일이나, 위치가 다르기 때문)
+
+```ts
+const stampCardList = cellCardList.filter(
+  (cellCard) => cellCard.type === "stamp"
+);
+
+const meetCard = cellCardList.find((cellCard) => cellCard.type === "meet");
+```
+---
+
+그리고 `meet`의 경우 style을 정의할 때 약간의 로직이 들어가기 때문에 style 함수를 따로 분리했다.
+
+**이전 혹은 다음 일정이 있는 경우** 좌우 `padding`을 추가하고 `range`만큼 `width`를 설정했다. 
+
+```ts {1,5,6,8}
+const meetCardStyle = getMeetCardStyle(meetCard);
+
+export const getMeetCardStyle = (meetCard: CellCard | undefined) => {
+  if (!meetCard) return {};
+  const paddingLeft = meetCard.isExistPrev ? "0px" : "32px";
+  const paddingRight = meetCard.isExistNext ? "0px" : "32px";
+  const style = {
+    width: `calc(101% * ${meetCard.range})`,
+    paddingLeft,
+    paddingRight
+  };
+
+  return style;
+};
+```
+
+---
+
+마지막으로 렌더링을 시켜주면 끝!
+
+```tsx
+<div className="h-[50px]">
+  {meetCard && (
+    <div
+      className='absolute top-2'
+      style={{ ...meetCardStyle }}
+    >
+      <div className='w-full'>{meetCard.content}</div>
+    </div>
+  )}
+</div>
+{/** stamp 렌더링은 생략 */}
+```
+
+## 결과
+
+![](/zero_library/calendar/calendar_3.png)
+
+뭔가 노션이나 여타 캘린더의 그것처럼 흉내 정도는 낼 수 있었..나?
+
+
+## 2차 구현 마무리
+
+개발을 시작한 뒤 웹사이트를 돌아다니다보면 흔하게 보이는 기능들이 있다. `캘린더`, `페이지네이션`, `모달` 등... 전부 너무 흔하게 들어가있는 기능들이라 어려울거라 생각도 못한 기능들이다. 하지만 곰곰히 생각해보면 대체 어떻게 한거지? 싶은 것들이 아직 많다. 
+
+캘린더는 그 중 하나였고 마침 캘린더를 개발할 기회가 생겨 라이브러리를 사용하지 않고 구현해보았다. 개발하기 전에는 감도 잡히지 않던 기술이지만 지금은 머리속에 어느 정도 정리가 된 상태고 매우 뿌듯하고 개운해서 기분이 좋다 ㅎ. 앞으로도 라이브러리를 사용하지 않고 여러 가지 기능들을 만들어 볼 생각이다. (아마 토스트가 첫 그거일듯) 물론 캘린더 기능부터 며칠 내로 업그레이드 해서 다음 포스팅을 진행할 예정이다.
+
+### 캘린더 업그레이드 체크리스트
+
+- 실제 데이터 기준으로 동작되도록 변경 (선행 작업 이후 진행예정)
+- 현재의 이 조잡한 디자인을 빨리 바꾸고 싶지만 실제 데이터가 생성된 후 진행 예정
+- 추가 기능 개발 (필터링 등)
+
+## 라이브러리 없이 캘린더 구현하기
+[#1 기본 UI 구현](./calendar)
+[#2 현재 글 - 일정 표시 구현](./calendar-2)
