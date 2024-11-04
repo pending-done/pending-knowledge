@@ -1,0 +1,65 @@
+---
+title: "Next.js 페이지 데이터 갱신하기 #revalidatePath"
+date: 2024-11-04
+desc: revalidatePath는 Next.js에서 페이지나 경로의 데이터를 재검증하고 갱신할 수 있도록 도와주는 함수이다.
+thumbnail: /category/next.png
+---
+
+![](/category/next.png)
+
+
+## 발생한 문제
+
+<Callout type="danger">
+사용자가 게시글을 작성한 뒤, `router` 를 사용하여 게시글 목록페이지로 이동시켰지만 작성한 데이터가 바로 노출되지 않고 새로고침을 한 뒤 노출이 되는 문제가 발생했다.
+</Callout>
+
+### 문제 코드
+
+```ts {3}
+const onSubmit: SubmitHandler<PostInsert> = async (data) => {
+  await processSubmitData(data, postId);
+  router.replace("/posts");
+};
+```
+
+위 코드를 보면 데이터를 저장한 뒤 사용자를 `/posts` 경로로 보내고 있다 (작성 페이지 -> 목록 페이지). 이렇게 처리 할 경우 하지만 작성 한 데이터가 목록 페이지에서 바로 노출이 되지 않고 새로고침을 한 뒤에 노출이 되는 문제가 생겼다. 
+
+
+### 원인
+
+Next.js에서 서버 컴포넌트로 만들어진 `posts` **페이지는 처음 로드할 때** 서버에서 데이터를 패칭한다. 처음 페이지를 로드할 때 서버에서 데이터를 가져오며, 이후 `replace` 또는 `push`로 이동하면 SPA처럼 동작하여 데이터가 새로 고쳐지지 않는다. 즉, URL의 이동은 일어나지만 기본적으로 페이지가 새로 고쳐지지 않기 때문에 새로운 데이터가 화면에 반영되지 않는다. 이 문제를 해결하고자 `revalidatePath` 를 사용했다.
+
+
+## Next.js 캐싱
+
+Next.js는 정적 페이지를 생성(캐싱)하고, 특정 조건에 따라 페이지를 업데이트하는 방식으로 동작한다. 이 때 조건을 충족하기 전에 페이지를 업데이트하고 싶을 때 `revalidatePath`를 사용하면, 특정 경로의 데이터를 강제로 재검증 할 수 있게 해준다.
+
+### revalidatePath
+
+<Callout type="info">
+Next.js에서 페이지나 경로의 데이터를 재검증하고 갱신할 수 있도록 도와주는 함수이다. 
+</Callout>
+
+
+### 사용 방법
+
+예를 들어, 사용자가 게시글을 작성, 수정 등의 요청을 한 뒤 특정 페이지의 데이터를 재검증하고 요청하고 싶을 때 사용할 수 있다. 다음 예시 코드를 살펴보자. 사용자가 `form` 제출을 하면 데이터를 저장하고, `replace` 를 사용하기 전에 `/posts` 경로에 대해 재검증을 하도록 `revalidatePath` 를 추가했다.
+
+```js {5}
+import { revalidatePath } from "next/cache";
+
+const handleSubmit = async (post) => {
+  await submitPostData(post);
+  revalidatePath('/posts'); 
+  router.replace("/meets");
+};
+```
+
+
+## 정리
+
+Next.js의 캐싱 기법에 대해 아직 모르는 부분이 많다고 생각한다. Next.js를 사용하는 가장 큰 이유는 여러가지가 있겠지만 그 중 하나는 캐싱(및 SEO 등)이라고 생각하기 때문에 이런 부분에서는 확실히 다양한 개념에 대해 학습하고 사용할 수 있도록 많은 공부가 필요할 것 같다.
+
+## Reference
+[Next.js 공식문서 #revalidatePath](https://nextjs.org/docs/app/api-reference/functions/revalidatePath)
