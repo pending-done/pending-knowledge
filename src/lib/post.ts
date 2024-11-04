@@ -1,5 +1,6 @@
 import { CategoryDetail, HeadingItem, Post, PostMatter } from '@/config/types';
-import dayjs from 'dayjs';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import fs from 'fs';
 import { sync } from 'glob';
 import matter from 'gray-matter';
@@ -49,7 +50,8 @@ const parsePostDetail = async (postPath: string) => {
   const { data, content } = matter(file);
   const grayMatter = data as PostMatter;
   const readingMinutes = Math.ceil(readingTime(content).minutes);
-  const dateString = dayjs(grayMatter.date).locale('ko').format('YYYY년 MM월 DD일');
+  // const dateString = dayjs(grayMatter.date).locale('ko').format('YYYY년 MM월 DD일');
+  const dateString = format(new Date(grayMatter.date), 'yyyy년 MM월 dd일', { locale: ko });
   return { ...grayMatter, dateString, content, readingMinutes };
 };
 
@@ -74,13 +76,12 @@ export const getPostList = async (category?: string): Promise<Post[]> => {
 };
 
 // 모든 포스트 작성 일자 조회
-export const getDateList = async (): Promise<Date[]> => {
+export const getPostedDates = async (): Promise<Date[]> => {
   const postPaths = getPostPaths();
 
   const postList = await Promise.all(postPaths.map((postPath) => parsePost(postPath)));
-  const dateList = postList.map((post) => post.date);
-  console.log('dateList', dateList);
-  return dateList;
+  const postedDates = postList.map((post) => post.date);
+  return postedDates;
 };
 
 export const getSortedPostList = async (category?: string) => {

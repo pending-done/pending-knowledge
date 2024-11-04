@@ -1,11 +1,16 @@
 import React from 'react';
 
-import { getDateList } from '@/lib/post';
+import CalendarController from './CalendarController';
+import { getPostedDates } from '@/lib/post';
 
 const Calendar = async () => {
-  const dateList = await getDateList();
+  const postedDates = await getPostedDates();
 
-  return <div>Calendar</div>;
+  return (
+    <div>
+      <CalendarController postedDates={postedDates} />
+    </div>
+  );
 };
 
 export default Calendar;
