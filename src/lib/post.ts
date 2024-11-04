@@ -73,6 +73,16 @@ export const getPostList = async (category?: string): Promise<Post[]> => {
   return postList;
 };
 
+// 모든 포스트 작성 일자 조회
+export const getDateList = async (): Promise<Date[]> => {
+  const postPaths = getPostPaths();
+
+  const postList = await Promise.all(postPaths.map((postPath) => parsePost(postPath)));
+  const dateList = postList.map((post) => post.date);
+  console.log('dateList', dateList);
+  return dateList;
+};
+
 export const getSortedPostList = async (category?: string) => {
   const postList = await getPostList(category);
   return sortPostList(postList);
