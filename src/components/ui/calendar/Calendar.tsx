@@ -7,7 +7,7 @@ const Calendar = async () => {
   const postedDates = await getPostedDates();
 
   return (
-    <div>
+    <div className='w-full'>
       <CalendarController postedDates={postedDates} />
     </div>
   );
