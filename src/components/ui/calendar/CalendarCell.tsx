@@ -13,7 +13,7 @@ export const CalendarCell = ({ date, hasPost }: Props) => {
 
   return (
     <div
-      className={`h-40 border-[1px]  border-neutral-400 p-2 ${hasPost ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
+      className={` flex min-h-[105px] w-full flex-col justify-between rounded-[10px] border-[1px]  p-2 ${hasPost ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
     >
       <span className={`${isWeekend(date) ? 'text-gray-500' : 'text-black dark:text-white'}`}>
         {dateNumber}

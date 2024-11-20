@@ -34,14 +34,14 @@ const CalendarTable = ({ currentMonth, postedDates }: Props) => {
 
   return (
     <div className=''>
-      <ul className='grid grid-cols-7 py-4'>
+      <ul className='grid grid-cols-7 gap-[7px]'>
         {daysKr.map((day) => (
           <li key={day} className='flex w-full justify-center'>
-            <span>{day}</span>
+            <span className='color-gray01 text-[16px] font-medium'>{day}</span>
           </li>
         ))}
       </ul>
-      <div className='grid grid-cols-7 '>
+      <div className='grid grid-cols-7 gap-[7px]'>
         {dateConfigs.map((dateConfig) => (
           <CalendarCell
             key={dateConfig.date.toISOString()}
