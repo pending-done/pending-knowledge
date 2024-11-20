@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
 import PostListPage from '@/components/post_list/PostListPage';
+import Calendar from '@/components/ui/calendar/Calendar';
 import { baseDomain, blogName, blogThumbnailURL } from '@/config/const';
 import { getCategoryList, getCategoryPublicName } from '@/lib/post';
 
@@ -37,7 +38,17 @@ export async function generateMetadata({ params: { category } }: Props): Promise
 }
 
 const CategoryPage = async ({ params }: Props) => {
-  return <PostListPage category={params.category} />;
+  return (
+    <div className='mx-auto mt-12 w-full max-w-[950px] px-4'>
+      <div className='mb-12'>
+        <PostListPage category={params.category} />
+      </div>
+      <hr />
+      <div className='mt-12'>
+        <Calendar />
+      </div>
+    </div>
+  );
 };
 
 export default CategoryPage;
