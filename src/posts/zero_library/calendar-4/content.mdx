@@ -1,0 +1,104 @@
+---
+title: "라이브러리 없이 캘린더 구현하기 - 일정에 마우스 이벤트 추가 #4"
+date: 2024-11-04
+desc: Next+TS 환경에서 캘린더 구현하기. 네 번째 일정에 마우스 이벤트 추가하기
+thumbnail: /zero_library/calendar/calendar_4.png
+---
+
+
+![](/zero_library/calendar/calendar_5.gif)
+
+
+
+## 목표
+
+<Callout type="normal">
+캘린더에 렌더링된 일정 부분(모임카드)에 마우스 이벤트 추가하기 `onMouseOver`, `onMouseLeave`, `onClick` 등의 이벤트를 주어 위 짤처럼 동작하는 것을 목표로 한다.
+</Callout>
+
+**onMouseOver**: 모임카드에 마우스를 올리면 배경색을 변경한다. 이 때 같은 일정인 경우 다른 div도 같이 색상이 변경된다.
+**onMouseLeave**: `onMouseOver` 기본 배경색으로 변경된다.(이벤트 제거)
+**onClick**: 모임카드를 클릭하면 해당하는 모임 페이지로 이동한다.
+
+
+## 구현
+
+### 1. CalendarTable.tsx
+
+<Callout type="normal">
+월 별 전체 일자를 출력하는 컴포넌트이다. 월 기준 첫 일자와 마지막 일자를 구하여 반복하여 출력한다. 
+</Callout>
+
+우선 `hoverItem` state와 핸들링할 수 있는 함수를 정의한 뒤 Props로 `CalendarCell`에 전달한다.
+
+```ts
+const [hoverItem, setHoverItem] = useState("");
+
+const handleHoverItem = (id: string) => {
+  setHoverItem(id);
+};
+```
+
+### 2. CalendarCell.tsx
+
+<Callout type="normal">
+캘린더 일자 하나하나에 해당하는 컴포넌트이다. 모임카드와 후기카드 렌더링 및 스타일 로직을 담당(?)한다.
+</Callout>
+
+#### 1. meetCardId 정의
+
+각 모임카드에 [정의된 데이터](./calendar-3)를 기준으로 `meetCardId`를 추출한다. 다른 '주'에서 생성된 모임 카드여도 같은 모임이라면 같은 `type`, `typeId` 값을 갖고있기 때문에 `onMouseOver` 이벤트로 다른 div의 색상을 변경하는게 가능하다.
+
+```ts
+const meetCardId = `${meetCard.type}-${meetCard.typeId}`;
+```
+
+#### 2. 이벤트처리
+
+**onMouseOver**: 이벤트 발생 시 `handleHoverItem`에 해당 `meetCardId` 를 전달한다.   
+**onMouseLeave**: `handleHoverItem`에 빈 문자열을 전달한다.  
+**onClick**: 모임 상세페이지로 이동시킨다.
+
+```tsx {3, 4, 6}
+<div
+  className={`${meetCardContentBg}`}
+  onMouseOver={() => handleHoverItem(meetCardId)}
+  onMouseLeave={() => handleHoverItem("")}
+  onClick={() => {
+    router.push(`/meets/${meetCard.typeId}`);
+  }}
+>
+```
+
+#### 3. 스타일 변경
+
+`onMouseOver` 이벤트로부터 변경된 `hoverItem`과 렌더링되는 모임카드의 `meetCardId`가 같은 경우 배경색상을 변경한다.
+
+```ts {1}
+const meetCardContentBg = hoverItem === meetCardId ? "bg-[#FF731A]" : "bg-[#FFD0B2]";
+```
+
+
+## 결과
+
+![](/zero_library/calendar/calendar_5.gif)
+
+
+## 4차 구현 마무리
+
+프로젝트에 필요한 캘린더 기능 구현이 드디어 끝났다! 앞으로 자잘한 오류 수정을 진행할 예정이며 전체 코드는 [깃허브](https://github.com/wldud7788/fire-spot/blob/main/src/app/(pages)/mypage/Calendar.tsx) 에서 확인이 가능합니다. 
+
+
+### 캘린더 업그레이드 체크리스트
+
+- ~~실제 데이터 기준으로 동작되도록 변경 (선행 작업 이후 진행예정)~~ ✔️
+- ~~현재의 이 조잡한 디자인을 빨리 바꾸고 싶지만 실제 데이터가 생성된 후 진행 예정~~ ✔️
+- ~~필터링~~ ✔️
+- ~~일정부분에 mouseEnter, click 이벤트 추가~~
+
+
+## 라이브러리 없이 캘린더 구현하기
+[#1 기본 UI 구현](./calendar)
+[#2 일정 표시 구현](./calendar-2)
+[#3 필터 기능 구현](./calendar-3)
+[#4 현재 글 - 일정 이벤트처리](#)
