@@ -1,0 +1,61 @@
+---
+title: "[JS 톺아보기] nullish 병합 연산자"
+date: 2024-11-25
+desc: nullish 병합 연산자
+thumbnail: /category/js.png
+---
+
+
+## null 병합 연산자 '??'
+
+null 병합 연산자(nullish coalescing operator) `??` 는 피연산자 중 값이 있는 피연산자를 찾아준다. 예를 들어 `a ?? b` 의 결과는 다음과 같다.
+- `a`가 `null` 또는 `undefined` 가 아니면 `a` 를 반환
+- `a`가 `null` 또는 `undefined`라면 `b` 를 반환
+
+즉, 앞의 피연산자의 값이 `null`, `undefined` 라면 뒤의 피연산자의 값을 반환, 그 외의 경우 앞의 피연산자의 값을 반환한다.  
+
+### 사용하는 이유
+
+`??` 를 사용하지 않고 비교연산자를 사용할 경우 코드가 길어질 수 있다.
+
+```js
+const c = (a !== null && a !== undefined) ? a : b
+```
+
+위의 코드를 `??` 를 사용하도록 변경하면 다음과 같이 사용할 수 있다.
+
+```js
+const c = a ?? b
+```
+
+
+
+### OR연산자(||)와 차이
+
+`??`와 `||` 의 가장 큰 차이는 `null`, `undefined`로만 비교하는지, 모든 `falsy`한 값에 대해 비교를 하는지의 차이가 있다. 
+- `??`는 `null`, `undefined`로만 비교한다. 
+- `||`는 `null`, `undefined` 뿐만 아니라 모든 `falsy`한 값에 대해 비교를 한다.(`0`, `""`, `NaN` ... )
+
+**예시:**
+```js
+NaN || 1 // 1
+NaN ?? 1 // NaN 
+```
+
+<Callout type="danger" title="주의점">
+안정성 관련 이슈 때문에 `??` 는 `&&`나 `||` 와 함께 사용할 수 없다. 따라서 하나의 표현식에서 사용하고 싶다고 하면 `괄호()` 를 사용하면 된다.
+</Callout>
+
+**예시:**
+```js
+const c = 1 && 2 ?? 3; // SyntaxError
+const c = (1 && 2) ?? 3; // 정상 동작
+```
+
+## 정리
+
+`??` 를 사용하면 코드를 단축할 수 있고 가독성도 증가한다(적당히 사용한다면?). 주의할 점은 비교 방식이 `||` 과 상당히 유사함으로 둘의 차이점을 확실히 인지하고 사용할 필요가 있다.
+
+## Reference
+
+- [javascript info #nullish 병합 연산자 '??'](https://ko.javascript.info/nullish-coalescing-operator)
