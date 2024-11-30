@@ -76,7 +76,13 @@ export const getPostList = async (category?: string): Promise<Post[]> => {
 };
 
 export const getPostListWithOrder = (postList: Post[]): PostWithOrder[] => {
-  const sortedPostList = postList.sort((a, b) => a.categoryPath.localeCompare(b.categoryPath));
+  const sortedPostList = postList.sort((a, b) => {
+    if (a.categoryPath === b.categoryPath) {
+      return a.date.getTime() - b.date.getTime();
+    }
+
+    return a.categoryPath.localeCompare(b.categoryPath);
+  });
 
   let order = 1;
   const postListWithOrder: PostWithOrder[] = sortedPostList.map((post, index, arr) => {
