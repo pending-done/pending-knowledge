@@ -1,4 +1,4 @@
-import { CategoryDetail, HeadingItem, Post, PostMatter } from '@/config/types';
+import { CategoryDetail, HeadingItem, Post, PostMatter, PostWithOrder } from '@/config/types';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import fs from 'fs';
@@ -73,6 +73,22 @@ export const getPostList = async (category?: string): Promise<Post[]> => {
 
   const postList = await Promise.all(postPaths.map((postPath) => parsePost(postPath)));
   return postList;
+};
+
+export const getPostListWithOrder = (postList: Post[]): PostWithOrder[] => {
+  const sortedPostList = postList.sort((a, b) => a.categoryPath.localeCompare(b.categoryPath));
+
+  let order = 1;
+  const postListWithOrder: PostWithOrder[] = sortedPostList.map((post, index, arr) => {
+    if (index > 0 && arr[index].categoryPath !== arr[index - 1].categoryPath) {
+      order = 1;
+    }
+    return { ...post, order: order++ };
+  });
+
+  // postListWithOrder.forEach((post) => console.log('post => ', post.categoryPath, post.order));
+
+  return postListWithOrder;
 };
 
 // 모든 포스트 작성 일자 조회

@@ -10,20 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CategoryDetail, Post } from '@/config/types';
+import { CategoryDetail } from '@/config/types';
 
 interface CategoryListProps {
   categoryList: CategoryDetail[];
   allPostCount: number;
   currentCategory?: string;
-  postList: Post[];
 }
 
 const CategoryList = ({
   categoryList,
   allPostCount,
   currentCategory = 'all',
-  postList,
 }: CategoryListProps) => {
   const router = useRouter();
 
@@ -37,7 +35,7 @@ const CategoryList = ({
 
   return (
     <>
-      <section className='mb-10 '>
+      <section className='mb-10 hidden sm:block'>
         <ul className='flex gap-3'>
           <CategoryButton
             href='/blog'

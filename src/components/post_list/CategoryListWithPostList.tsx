@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { CategoryButton } from './CategoryButton';
+import PostTitle from './PostTitle';
 import {
   Select,
   SelectContent,
@@ -10,16 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CategoryDetail, Post } from '@/config/types';
+import { CategoryDetail, Post, PostWithOrder } from '@/config/types';
 
 interface CategoryListProps {
   categoryList: CategoryDetail[];
   allPostCount: number;
   currentCategory?: string;
-  postList: Post[];
+  postList: PostWithOrder[];
 }
 
-const CategoryList = ({
+const CategoryListWithPostList = ({
   categoryList,
   allPostCount,
   currentCategory = 'all',
@@ -38,21 +39,22 @@ const CategoryList = ({
   return (
     <>
       <section className='mb-10 '>
-        <ul className='flex gap-3'>
-          <CategoryButton
-            href='/blog'
-            isCurrent={currentCategory === 'all'}
-            displayName='All'
-            count={allPostCount}
-          />
+        <ul className='flex flex-col gap-3'>
           {categoryList.map((cg) => (
-            <CategoryButton
-              key={cg.dirName}
-              href={`/blog/${cg.dirName}`}
-              displayName={cg.publicName}
-              isCurrent={cg.dirName === currentCategory}
-              count={cg.count}
-            />
+            <>
+              <CategoryButton
+                key={cg.dirName}
+                href={`/blog/${cg.dirName}`}
+                displayName={cg.publicName}
+                isCurrent={cg.dirName === currentCategory}
+                count={cg.count}
+              />
+              {/* TODO 그거 번호 나오게 */}
+              {postList.map(
+                (post, index) =>
+                  cg.dirName === post.categoryPath && <PostTitle key={post.url} post={post} />
+              )}
+            </>
           ))}
         </ul>
       </section>
@@ -75,4 +77,4 @@ const CategoryList = ({
   );
 };
 
-export default CategoryList;
+export default CategoryListWithPostList;

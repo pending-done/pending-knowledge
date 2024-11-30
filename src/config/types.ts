@@ -15,6 +15,9 @@ export interface Post extends PostMatter {
   readingMinutes: number;
   categoryPublicName: string;
 }
+export interface PostWithOrder extends Post {
+  order: number;
+}
 
 export interface CategoryDetail {
   dirName: string;
