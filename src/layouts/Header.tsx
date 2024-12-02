@@ -12,7 +12,7 @@ import { Github } from 'lucide-react';
 
 const navList = [
   { name: '전체 포스팅', href: '/blog' },
-  { name: 'Frontend', href: '/blog/Frontend' },
+  // { name: 'Frontend', href: '/blog/Frontend' },
 ];
 
 export const Header = () => {
