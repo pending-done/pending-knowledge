@@ -49,7 +49,6 @@ const CategoryListWithPostList = ({
                 isCurrent={cg.dirName === currentCategory}
                 count={cg.count}
               />
-              {/* TODO 그거 번호 나오게 */}
               {postList.map(
                 (post, index) =>
                   cg.dirName === post.categoryPath && <PostTitle key={post.url} post={post} />
