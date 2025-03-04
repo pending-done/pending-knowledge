@@ -1,0 +1,50 @@
+---
+title: "제네릭"
+date: 2025-03-04
+desc: 타입스크립트에서 제네릭에 대해 살펴봅니다.
+thumbnail: /category/ts.png
+---
+
+
+# 제네릭
+
+<Callout type="normal">
+타입을 함수 등에서 매개변수처럼 사용하는 것
+</Callout>
+
+다음과 같은 함수들이 있다고 가정해보자.
+
+```ts
+function printStrings(arr: string[]): void {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(arr[i]);
+    }
+}
+
+function printNumbers(arr: number[]): void {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(arr[i]);
+    }
+}
+```
+이 함수들은 역할이 매우 유사하나 각각 `string`, `number` 타입만 처리할 수 있다. 이렇게 중복되는 코드를 하나의 함수로 만들때 `제네릭`을 사용할 수 있다.
+
+## 제네릭 함수
+
+아래 코드처럼 제네릭을 사용하여 여러 타입을 처리할 수 있다.
+
+```ts
+function printAnything<T>(arr: T[]): void {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(arr[i]);
+    }
+}
+
+printAnything(['a', 'b', 'c']); // <string>을 써주지 않아도 타입 추론이 가능
+printAnything([1, 2, 3]); // <number>를 써주지 않아도 타입 추론이 가능
+```
+
+## 타입스크립트
+
+[#1 타입스크립트 - [타입 어노테이션과 추론]](./type-annotation/)
+[#2 현재 글 - [제네릭]](#)
