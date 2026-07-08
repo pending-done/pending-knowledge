@@ -14,7 +14,7 @@ export const Footer = () => {
             width={30}
           />
         </Link>
-        <Link href='' target='_blank'>
+        <Link href='https://www.linkedin.com/in/ljj-y-a509b6420/' target='_blank'>
           <IconLinkedin
             className='fill-foreground transition hover:fill-pink-600'
             height={30}
@@ -23,7 +23,7 @@ export const Footer = () => {
         </Link>
       </div>
       <div>
-        © 2024. <span className='font-semibold'>LeeJY</span> all rights reserved.
+        © 2026. <span className='font-semibold'>LeeJY</span> all rights reserved.
       </div>
     </footer>
   );
