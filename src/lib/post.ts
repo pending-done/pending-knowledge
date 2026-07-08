@@ -113,7 +113,7 @@ export const getSortedPostList = async (category?: string) => {
 
 export const getSitemapPostList = async () => {
   const postList = await getPostList();
-  const baseUrl = 'https://github.com/pending-done';
+  const baseUrl = 'https://pending-knowledge.vercel.app';
   const sitemapPostList = postList.map(({ url }) => ({
     lastModified: new Date(),
     url: `${baseUrl}${url}`,
