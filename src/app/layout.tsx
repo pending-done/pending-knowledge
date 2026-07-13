@@ -6,7 +6,7 @@ import '@/config/globals.css';
 import { Footer } from '@/layouts/Footer';
 import { Header } from '@/layouts/Header';
 import { ThemeProvider } from '@/layouts/theme/Provider';
-import { GoogleTagManager } from '@next/third-parties/google';
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -46,6 +46,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <GoogleTagManager gtmId='GTM-59RJF875' />
+        <GoogleAnalytics gaId='G-EK6KKEK3CN' />
       </body>
     </html>
   );
